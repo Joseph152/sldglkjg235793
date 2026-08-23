@@ -592,9 +592,10 @@ async function startRecording(cardId, statusEl, playWrapEl, volumeCtx, onForceSt
     currentStream = stream;
     audioChunks = [];
     mediaRecorder = new MediaRecorder(stream);
+    const actualMimeType = mediaRecorder.mimeType || 'audio/webm';
     mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
     mediaRecorder.onstop = () => {
-      const blob = new Blob(audioChunks, { type: 'audio/webm' });
+      const blob = new Blob(audioChunks, { type: actualMimeType });
       const url = URL.createObjectURL(blob);
       playWrapEl.innerHTML = `<audio controls src="${url}" style="width:100%;margin-top:10px;"></audio>`;
       lastRecordingAudioEl = playWrapEl.querySelector('audio');
