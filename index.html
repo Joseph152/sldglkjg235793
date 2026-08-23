@@ -505,6 +505,11 @@ const MONOLOGUES = [
 const CHARACTER_VOICES = ['Movie trailer announcer','Cheerful game show host','Mysterious villain','Serious news anchor','Overly enthusiastic kids\' show host','Wise old sage','Sports commentator calling the play-by-play'];
 const CHARACTER_LINE = "Today, we're going to try something a little different.";
 
+const FAKE_LAUGH = [
+  {id:'fl1', title:'Find your real laugh first', meta:'Do this before practicing', body:'Watch or think of something that genuinely makes you laugh, and record yourself in that unguarded moment — don\'t try to perform "your laugh," just catch it. Do this a few times across different kinds of funny. Notice what stays the same each time: the pitch, the rhythm, whether you snort, wheeze, or go silent and shake. That consistent pattern is your real signature. A close friend who\'s heard you laugh a lot can often describe it more accurately than you can.', hint:'A fake laugh built on your own real vocal signature reads as authentic. A generic "ha-ha-ha" never does.'},
+  {id:'fl2', title:'The quick fake laugh', meta:'2–4 seconds · Social reaction', body:'Start from an exhale, not an inhale — real spontaneous laughs burst out on breath you\'re already releasing, so inhaling first reads as staged. Keep it to 2–4 "ha" or "heh" sounds; longer starts to feel performed for a quick reaction. Vary the pitch slightly across those syllables instead of keeping them identical — a flat, same-pitch "ha-ha-ha" is the single biggest tell of a fake laugh. And timing matters more than sound: it has to land within a half-second of the trigger, or it reads as fake no matter how good it sounds.', hint:'Pair it with your eyes, not just your mouth. A real laugh crinkles the eyes — a big mouth-smile with flat eyes is what actually gives a fake laugh away.'},
+];
+
 // ============ STATE ============
 function freshState() {
   return { completed: {}, volumeSessions: [], activityDates: [] };
@@ -1039,7 +1044,7 @@ function renderFunnyList() {
 }
 
 // ============ TAB 4: SING / ACT ============
-const SINGACT_SECTIONS = ['Vocal range','Emotion switch','Monologues','Character voices'];
+const SINGACT_SECTIONS = ['Vocal range','Emotion switch','Monologues','Character voices','Fake laugh'];
 let activeSingactFilter = 'Vocal range';
 
 function renderSingactFilters() {
@@ -1117,12 +1122,25 @@ function renderSingactList() {
     CHARACTER_VOICES.forEach((c,i) => wireRecordButton(document.getElementById('card-cv'+i), 'cv'+i, false));
     return;
   }
+  if (activeSingactFilter === 'Fake laugh') {
+    list.innerHTML = FAKE_LAUGH.map(ex => `
+      <div class="card" id="card-${ex.id}">
+        <div class="card-meta">${ex.meta||''}</div>
+        <div class="card-title">${ex.title}</div>
+        <div class="card-body">${ex.body}</div>
+        ${ex.hint ? `<div class="card-hint">💡 ${ex.hint}</div>` : ''}
+        ${recordControls(ex.id, false)}
+      </div>
+    `).join('');
+    FAKE_LAUGH.forEach(ex => wireRecordButton(document.getElementById('card-'+ex.id), ex.id, false));
+    return;
+  }
 }
 
 // ============ PROGRESS TAB ============
 function renderProgress() {
   updateHeader();
-  const totalActivities = BREATHING.length+VOCAL_WARMUPS.length+RATE_CONTROL.length+PROSODY_DRILLS.length+FILLER_DRILLS.length+PROJECTION_DRILLS.length+SCENARIOS.length+RHETORIC_DEVICES.length+JOKES.length+VOCAL_RANGE.length+EMOTIONS.length+MONOLOGUES.length+CHARACTER_VOICES.length;
+  const totalActivities = BREATHING.length+VOCAL_WARMUPS.length+RATE_CONTROL.length+PROSODY_DRILLS.length+FILLER_DRILLS.length+PROJECTION_DRILLS.length+SCENARIOS.length+RHETORIC_DEVICES.length+JOKES.length+VOCAL_RANGE.length+EMOTIONS.length+MONOLOGUES.length+CHARACTER_VOICES.length+FAKE_LAUGH.length;
   const doneCount = Object.keys(state.completed).length;
   document.getElementById('progressStats').innerHTML = `
     <div class="stat-box"><div class="stat-num">${currentStreak()}</div><div class="stat-lbl">Day streak</div></div>
