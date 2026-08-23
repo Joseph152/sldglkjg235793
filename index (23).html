@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Podium — Speak with confidence</title>
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Podium">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#1E1B18;
+  --panel:#2A2521;
+  --panel-2:#332C27;
+  --brass:#C08A3E;
+  --brass-dim:#8C6530;
+  --brass-glow:#E0AC5F;
+  --cream:#F2EAD8;
+  --cream-dim:#B8AF9C;
+  --on-air:#B23A3A;
+  --on-air-bright:#D65454;
+  --sage:#7A9B8E;
+  --sage-bright:#9BC0B2;
+  --line: rgba(242,234,216,0.12);
+  --radius: 14px;
+  --font-display:'Big Shoulders Display', sans-serif;
+  --font-body:'Work Sans', sans-serif;
+  --font-mono:'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;background:var(--black);color:var(--cream);font-family:var(--font-body);}
+body{
+  max-width:520px;margin:0 auto;min-height:100vh;
+  padding-bottom:88px;
+  position:relative;
+  background:
+    radial-gradient(ellipse at top, rgba(192,138,62,0.08), transparent 60%),
+    var(--black);
+}
+h1,h2,h3{font-family:var(--font-display);font-weight:700;letter-spacing:0.02em;margin:0;color:var(--cream);}
+p{margin:0;}
+button{font-family:inherit;cursor:pointer;}
+::-webkit-scrollbar{display:none;}
+
+/* ---------- HEADER ---------- */
+.topbar{
+  padding:22px 20px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-mark{
+  width:34px;height:34px;border-radius:50%;
+  border:2px solid var(--brass);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-size:16px;color:var(--brass);
+  flex-shrink:0;
+}
+.brand-name{font-family:var(--font-display);font-size:24px;letter-spacing:0.04em;color:var(--cream);text-transform:uppercase;}
+.session-count{font-family:var(--font-mono);font-size:11px;color:var(--cream-dim);text-align:right;line-height:1.4;}
+.session-count b{color:var(--brass-glow);font-weight:600;}
+
+/* ---------- VIEWS ---------- */
+.view{display:none;padding:20px 18px 30px;animation:fadeIn 0.25s ease;}
+.view.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+.tab-header{margin-bottom:20px;}
+.tab-eyebrow{
+  font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--brass);margin-bottom:6px;
+}
+.tab-title{font-size:34px;line-height:1;text-transform:uppercase;}
+.tab-sub{font-size:14px;color:var(--cream-dim);margin-top:8px;line-height:1.5;}
+
+/* ---------- CARDS ---------- */
+.card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:18px;
+  margin-bottom:14px;
+}
+.card-title{font-family:var(--font-display);font-size:20px;text-transform:uppercase;letter-spacing:0.01em;color:var(--cream);margin-bottom:4px;}
+.card-meta{font-family:var(--font-mono);font-size:11px;color:var(--brass);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;}
+.card-body{font-size:15px;line-height:1.6;color:var(--cream);}
+.card-hint{font-size:13px;color:var(--cream-dim);margin-top:10px;line-height:1.5;}
+
+.section-label{
+  font-family:var(--font-mono);font-size:12px;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--brass);margin:26px 0 12px;
+  display:flex;align-items:center;gap:8px;
+}
+.section-label::after{content:'';flex:1;height:1px;background:var(--line);}
+
+/* ---------- BUTTONS ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:13px 18px;border-radius:10px;border:1px solid var(--brass-dim);
+  background:transparent;color:var(--brass-glow);font-size:14px;font-weight:600;
+  width:100%;transition:transform 0.1s ease, background 0.15s ease;
+}
+.btn:active{transform:scale(0.98);}
+.btn.primary{background:var(--brass);color:var(--black);border-color:var(--brass);}
+.btn.record{background:var(--on-air);color:var(--cream);border-color:var(--on-air);}
+.btn.record.recording{background:var(--on-air-bright);animation:pulse 1.4s infinite;}
+.btn.ghost{border-color:var(--line);color:var(--cream-dim);}
+.btn-row{display:flex;gap:10px;margin-top:12px;}
+.btn-row .btn{width:auto;flex:1;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(178,58,58,0.5);}50%{box-shadow:0 0 0 8px rgba(178,58,58,0);}}
+
+/* ---------- BOTTOM NAV ---------- */
+.tabbar{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:520px;
+  background:var(--panel);border-top:1px solid var(--line);
+  display:flex;padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+  z-index:100;
+}
+.tab-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
+  background:none;border:none;color:var(--cream-dim);padding:6px 2px;border-radius:10px;
+}
+.tab-btn .icon{font-size:20px;line-height:1;}
+.tab-btn .label{font-family:var(--font-mono);font-size:9px;letter-spacing:0.04em;text-transform:uppercase;}
+.tab-btn.active{color:var(--brass-glow);}
+.tab-btn.active .icon{filter:drop-shadow(0 0 6px rgba(224,172,95,0.5));}
+
+/* ---------- VU METER (signature element) ---------- */
+.vu-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;margin:14px 0;}
+.vu-label{font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--cream-dim);}
+.vu-readout{font-family:var(--font-mono);font-size:12px;color:var(--brass-glow);}
+
+/* ---------- CHIP / TAG ---------- */
+.chip{
+  display:inline-block;padding:4px 10px;border-radius:20px;
+  font-family:var(--font-mono);font-size:10px;letter-spacing:0.06em;text-transform:uppercase;
+  border:1px solid var(--brass-dim);color:var(--brass);margin-right:6px;margin-bottom:6px;
+}
+.chip.sage{border-color:var(--sage);color:var(--sage-bright);}
+
+/* ---------- FILTER ROW ---------- */
+.filter-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+.filter-chip{
+  flex-shrink:0;padding:8px 14px;border-radius:20px;border:1px solid var(--line);
+  background:transparent;color:var(--cream-dim);font-family:var(--font-mono);font-size:11px;
+  text-transform:uppercase;letter-spacing:0.05em;
+}
+.filter-chip.active{border-color:var(--brass);color:var(--brass-glow);background:rgba(192,138,62,0.12);}
+
+/* ---------- PROGRESS / STATS ---------- */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+.stat-box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;}
+.stat-num{font-family:var(--font-display);font-size:30px;color:var(--brass-glow);line-height:1;}
+.stat-lbl{font-family:var(--font-mono);font-size:10px;color:var(--cream-dim);text-transform:uppercase;letter-spacing:0.06em;margin-top:6px;}
+
+.storage-note{font-size:12px;color:var(--cream-dim);line-height:1.6;margin-top:20px;padding-top:16px;border-top:1px solid var(--line);}
+.storage-note span{color:var(--on-air-bright);text-decoration:underline;cursor:pointer;}
+
+textarea, select, input[type=text]{
+  width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;
+  color:var(--cream);font-family:var(--font-body);font-size:14px;padding:10px 12px;
+}
+textarea{min-height:90px;resize:vertical;}
+
+/* ---------- TIMER ---------- */
+.timer-wrap{text-align:center;margin:14px 0;}
+.timer-display{font-family:var(--font-mono);font-size:38px;color:var(--brass-glow);letter-spacing:0.04em;font-weight:600;}
+.timer-display.done{color:var(--on-air-bright);animation:pulse-text 1s infinite;}
+@keyframes pulse-text{0%,100%{opacity:1;}50%{opacity:0.5;}}
+.timer-preset-row{display:flex;gap:8px;justify-content:center;margin-bottom:10px;}
+.timer-preset{padding:6px 16px;border-radius:16px;border:1px solid var(--line);background:transparent;color:var(--cream-dim);font-family:var(--font-mono);font-size:12px;}
+.timer-preset.active{border-color:var(--brass);color:var(--brass-glow);background:rgba(192,138,62,0.12);}
+.timer-btn-row{display:flex;gap:8px;justify-content:center;margin-top:8px;}
+.timer-btn-row .btn{width:auto;padding:9px 18px;font-size:13px;}
+
+.checklist-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);}
+.checklist-item:last-child{border-bottom:none;}
+.checklist-item input{margin-top:3px;accent-color:var(--brass);}
+.checklist-item label{font-size:14px;color:var(--cream);line-height:1.4;}
+
+@media print{
+  body *{visibility:hidden;}
+  #printSheetArea, #printSheetArea *{visibility:visible;}
+  #printSheetArea{position:absolute;left:0;top:0;width:100%;color:#111;background:#fff;}
+  .tabbar{display:none;}
+}
+#printSheetArea{display:none;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark">P</div>
+    <div class="brand-name">Podium</div>
+  </div>
+  <div class="session-count" id="headerStats">🔥 <b>0</b> day streak</div>
+</div>
+
+<!-- ============ TAB 1: WARM-UPS ============ -->
+<div class="view active" id="view-warmup">
+  <div class="tab-header">
+    <div class="tab-eyebrow">Session 01</div>
+    <h1 class="tab-title">Warm-ups</h1>
+    <p class="tab-sub">Loosen up your breath, voice, and mouth before anything else. Five minutes here changes everything that follows.</p>
+  </div>
+  <div class="filter-row" id="warmupFilters"></div>
+  <div id="warmupList"></div>
+</div>
+
+<!-- ============ TAB 2: SERIOUS CONVERSATIONS ============ -->
+<div class="view" id="view-serious">
+  <div class="tab-header">
+    <div class="tab-eyebrow">Session 02</div>
+    <h1 class="tab-title">Serious talk</h1>
+    <p class="tab-sub">Structure, argument, and holding your ground under a hard question.</p>
+  </div>
+  <div class="filter-row" id="seriousFilters"></div>
+  <div id="seriousList"></div>
+</div>
+
+<!-- ============ TAB 3: FUNNY / JOKES ============ -->
+<div class="view" id="view-funny">
+  <div class="tab-header">
+    <div class="tab-eyebrow">Session 03</div>
+    <h1 class="tab-title">Funny</h1>
+    <p class="tab-sub">Comedic timing and the comfort to be light in front of people.</p>
+  </div>
+  <div class="filter-row" id="funnyFilters"></div>
+  <div id="funnyList"></div>
+</div>
+
+<!-- ============ TAB 4: SING / ACT ============ -->
+<div class="view" id="view-singact">
+  <div class="tab-header">
+    <div class="tab-eyebrow">Session 04</div>
+    <h1 class="tab-title">Sing / Act</h1>
+    <p class="tab-sub">Break out of a flat voice. Range, emotion, and character.</p>
+  </div>
+  <div class="filter-row" id="singactFilters"></div>
+  <div id="singactList"></div>
+</div>
+
+<!-- ============ PROGRESS ============ -->
+<div class="view" id="view-progress">
+  <div class="tab-header">
+    <div class="tab-eyebrow">Overview</div>
+    <h1 class="tab-title">Progress</h1>
+  </div>
+  <div class="stat-grid" id="progressStats"></div>
+  <div class="section-label">Volume trend</div>
+  <div class="card" id="volumeTrendCard"></div>
+  <div class="section-label">Streak calendar</div>
+  <div class="card"><div id="calendarGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;"></div></div>
+  <div class="section-label">Session log</div>
+  <div id="sessionLog"></div>
+  <div class="btn-row">
+    <button class="btn" id="printBtn">🖨️ Print reference sheets</button>
+  </div>
+  <div class="storage-note">Progress saves to this browser only. <span id="resetLink">Reset all progress</span></div>
+</div>
+
+<div class="tabbar">
+  <button class="tab-btn active" data-view="warmup"><span class="icon">🎙️</span><span class="label">Warm-up</span></button>
+  <button class="tab-btn" data-view="serious"><span class="icon">💼</span><span class="label">Serious</span></button>
+  <button class="tab-btn" data-view="funny"><span class="icon">😄</span><span class="label">Funny</span></button>
+  <button class="tab-btn" data-view="singact"><span class="icon">🎭</span><span class="label">Sing/Act</span></button>
+  <button class="tab-btn" data-view="progress"><span class="icon">📊</span><span class="label">Progress</span></button>
+</div>
+
+<div id="printSheetArea"></div>
+
+<script>
+// ============ CONTENT DATA ============
+
+const BREATHING = [
+  {id:'br1', title:'Box breathing', meta:'Calm · 1 min', body:'Inhale through your nose for 4 counts. Hold for 4. Exhale through your mouth for 4. Hold empty for 4. Repeat the full box 4 times.', hint:'Great right before anything that makes you nervous — it slows your heart rate down fast.'},
+  {id:'br2', title:'Diaphragmatic breath', meta:'Foundation · 1 min', body:'Put one hand on your chest, one on your belly. Breathe so only the belly hand rises — the chest hand should barely move. Take 10 slow breaths like this.', hint:'This is the breath support your voice actually runs on. Shallow chest-breathing is what makes voices sound thin and shaky.'},
+  {id:'br3', title:'Extended exhale', meta:'Calm · 1 min', body:'Inhale for 4 counts. Exhale slowly for 8 counts, twice as long as the inhale. Repeat 6 times.', hint:'A longer exhale than inhale directly signals your nervous system to relax.'},
+];
+
+const VOCAL_WARMUPS = [
+  {id:'vw1', title:'Lip trills', meta:'Vocal · 1 min', body:'Relax your lips and blow air through them so they buzz, like a motorboat sound ("brrrrr"). While trilling, slide your pitch up and down.', hint:'If your lips won\'t buzz at first, use your fingers to gently hold your cheeks up.'},
+  {id:'vw2', title:'Gentle humming', meta:'Vocal · 1 min', body:'Hum softly with your mouth closed. Feel for a buzzing vibration around your lips and nose. Slide the hum slowly from a low pitch to a comfortably high one, then back down.', hint:'This is called "forward resonance" — it\'s the difference between a voice that sounds thin and one that carries.'},
+  {id:'vw3', title:'Pitch glides (sirens)', meta:'Vocal · 1 min', body:'On an "ah" sound, glide smoothly from the lowest note you can comfortably make up to the highest, then back down — like a siren. Do this 5 times.', hint:'Don\'t strain for the very top or bottom. The goal is smoothness, not extreme range.'},
+  {id:'vw4', title:'"Ng" resonance hum', meta:'Vocal · 1 min', body:'Say the "ng" sound from the end of the word "sing" and hold it. Feel where it buzzes in your face. Then open it into an "ah" while keeping that same buzzy feeling.', hint:'This trains your voice to resonate forward in your face instead of getting stuck in your throat.'},
+  {id:'vw5', title:'Jaw and tongue release', meta:'Physical · 1 min', body:'Open your mouth in a big, exaggerated yawn 3 times. Then stick your tongue out and move it side to side, then in circles, 10 times each direction.', hint:'A tense jaw is one of the most common hidden causes of a muffled, unclear voice.'},
+];
+
+const RATE_CONTROL = [
+  {id:'rc1', title:'The slow-down passage', meta:'Rate control · Level 1', body:'"There is no rush. Every word can arrive exactly when it is ready. A pause is not a mistake — it is a choice." Read this out loud noticeably slower than feels natural. Exaggerate it.', hint:'Nervous speakers almost always speed up without realizing it. Practicing "too slow" on purpose usually lands at a normal, confident pace.'},
+  {id:'rc2', title:'Metronome-style reading', meta:'Rate control · Level 2', body:'Tap your hand on your leg at a steady, even beat — about one tap per second. Read this sentence, saying one word per tap: "Today I will speak clearly and I will not let my nerves speed me up."', hint:'Once you can hold this pace with a beat, try dropping the tapping and keeping the same rhythm from memory.'},
+  {id:'rc3', title:'Long-passage pacing', meta:'Rate control · Level 3', body:'"When I first stood up to speak in front of a group, [pause] my instinct was to get through it as fast as possible. [pause] But the fastest way through a room is not always the clearest one. [pause] Slowing down does not make you look less confident — [pause] it makes you look like someone who is not afraid of silence." Read this, taking a real, silent pause at each [pause] mark — at least a full second.', hint:'A pause that feels way too long to you usually sounds completely normal to the listener.'},
+];
+
+const PROSODY_DRILLS = [
+  {id:'pd1', title:'Break the monotone', meta:'Prosody · Pitch variety', body:'Read this sentence three times, deliberately making your pitch rise and fall more each time than feels natural: "I have three updates to share with you today." First time: normal. Second time: exaggerated variety. Third time: somewhere in between.', hint:'Most people who sound monotone are actually using more range than they think — it just doesn\'t feel that way from the inside. Recording yourself is the fastest way to find out.'},
+  {id:'pd2', title:'Statement, not a question', meta:'Prosody · Uptalk', body:'Say each of these as a firm, confident statement — pitch going DOWN at the end, not up: "This is the plan we\'re moving forward with." / "I finished the report this morning." / "That\'s my final answer."', hint:'Ending statements with a rising pitch (uptalk) makes even confident ideas sound like they\'re asking for permission.'},
+  {id:'pd3', title:'Finish the sentence, don\'t fade out', meta:'Prosody · Vocal fry', body:'Read this passage keeping full breath support all the way to the end of each sentence, instead of letting your voice trail off into a low, creaky fry: "I want to walk you through our plan. It has three parts. Each one builds on the last."', hint:'Vocal fry often happens simply because you\'re running out of air — supporting the end of the sentence with breath (not just letting it collapse) fixes most of it.'},
+];
+
+const FILLER_DRILLS = [
+  {id:'fd1', title:'Silence instead of "um"', meta:'Filler words · Practice', body:'Read this passage. Every time you hit a [•], stop completely and count one full second of silence before continuing — do not say "um" or "uh" to fill it: "So the first thing I want to cover [•] is our timeline. [•] After that, [•] I\'ll open it up for questions."', hint:'A confident pause and a nervous "um" fill the exact same gap. Only one of them makes you sound unsure.'},
+  {id:'fd2', title:'The 60-second filler challenge', meta:'Filler words · Live practice', body:'Pick any topic — your weekend, a hobby, your favorite meal — and speak about it out loud for 60 seconds, trying to use zero filler words. When you feel a filler coming, pause silently instead.', hint:'This is genuinely hard the first several times. That\'s normal — it\'s a habit you\'re actively rewiring, not a one-try fix.', hasTimer:[60]},
+];
+
+const PROJECTION_DRILLS = [
+  {id:'pj1', title:'Whisper to full voice', meta:'Projection · Live meter', body:'Say this sentence starting at a whisper and gradually build to full, confident volume by the end: "I have something important to tell you, and I need you to hear all of it." Watch the meter climb as you go.', hasVolumeMeter:true},
+  {id:'pj2', title:'Back of the room', meta:'Projection · Live meter', body:'Picture someone sitting at the very back of a room, and speak this sentence like you need them to hear it clearly, without shouting: "Can everyone in the back hear me clearly right now?"', hasVolumeMeter:true},
+  {id:'pj3', title:'Steady volume hold', meta:'Projection · Live meter', body:'Read this whole passage trying to keep your volume level steady and audible all the way through — watch for dips at the ends of sentences, which is where volume most often drops: "Confidence isn\'t about being the loudest person in the room. It\'s about being the clearest — from your very first word to your very last, without trailing off."', hasVolumeMeter:true},
+];
+
+const TONGUE_TWISTERS = [
+  {id:'tt1', group:'S / Z sounds', text:'Six slippery seals slid silently south.'},
+  {id:'tt2', group:'S / Z sounds', text:"Zoe's zesty salsa surprised seven surprised sailors."},
+  {id:'tt3', group:'S / Z sounds', text:'Sarah sells seashells, but Sam sells socks swiftly.'},
+  {id:'tt4', group:'S / Z sounds', text:'Six sizzling sausages sat sizzling on Sunday.'},
+  {id:'tt5', group:'S / Z sounds', text:"Zack's zebra zipped south, sipping soda slowly."},
+  {id:'tt6', group:'R sounds', text:'Red rockets rarely race around rural roads.'},
+  {id:'tt7', group:'R sounds', text:"Roberto's rowdy rooster roared rapidly at rising dawn."},
+  {id:'tt8', group:'R sounds', text:'Three tired tigers tore through thorny thickets rapidly.'},
+  {id:'tt9', group:'R sounds', text:'Rural rangers rarely repair rusty railroad rails.'},
+  {id:'tt10', group:'R sounds', text:'Around the rugged rocks, ragged rabbits ran rapidly.'},
+  {id:'tt11', group:'B / P sounds', text:'Big blue balloons bounced past busy bakers.'},
+  {id:'tt12', group:'B / P sounds', text:"Peter's puppy plays perfectly with purple pebbles."},
+  {id:'tt13', group:'B / P sounds', text:'Bright brass bells barely broke past broken pipes.'},
+  {id:'tt14', group:'B / P sounds', text:'Practical penguins packed plenty of purple parkas.'},
+  {id:'tt15', group:'B / P sounds', text:"Bobby's black backpack bumped past bright pink boxes."},
+  {id:'tt16', group:'T / D sounds', text:'Ten tiny turtles trotted toward the tall tower.'},
+  {id:'tt17', group:'T / D sounds', text:"David's dusty drums dropped down the deep ditch."},
+  {id:'tt18', group:'T / D sounds', text:'Twelve twisted twigs twirled twice near twin trees.'},
+  {id:'tt19', group:'T / D sounds', text:'Diligent ducks dove deep despite the dark day.'},
+  {id:'tt20', group:'T / D sounds', text:'Terry told twelve tired travelers to try the trail.'},
+  {id:'tt21', group:'Mixed & hard', text:'Which wristwatches are Swiss wristwatches?'},
+  {id:'tt22', group:'Mixed & hard', text:"The sixth sick sheikh's sixth sheep is sick."},
+  {id:'tt23', group:'Mixed & hard', text:'How can a clam cram in a clean cream can?'},
+  {id:'tt24', group:'Mixed & hard', text:'Fresh French fried fly fritters fill fussy foxes.'},
+  {id:'tt25', group:'Mixed & hard', text:'A skunk sat on a stump and thought the stump stunk, but the stump thought the skunk stunk.'},
+];
+
+const FRAMEWORKS = [
+  {id:'fw1', title:'STAR method', meta:'Interview answers', body:'Situation — set the scene briefly. Task — what were you responsible for. Action — what you actually did. Result — what happened, ideally with a number or outcome. Use this any time you\'re asked "tell me about a time when..."'},
+  {id:'fw2', title:'Problem → Solution → Ask', meta:'Pitches & proposals', body:'Name the problem clearly and briefly. Present your solution and why it works. End with a specific, direct ask — what you actually want them to do or decide.'},
+  {id:'fw3', title:'Hook → Point → Close', meta:'Any short talk', body:'Hook — one sentence that earns attention (a question, a surprising fact, a short story). Point — your one clear main idea, said directly. Close — land it, don\'t trail off; restate the point in a slightly different way.'},
+];
+
+const SCENARIOS = [
+  {id:'sc1', group:'Workplace', text:"Present your team's quarterly results to leadership, including one number that missed target."},
+  {id:'sc2', group:'Workplace', text:'Explain a project delay to a client without assigning blame to anyone.'},
+  {id:'sc3', group:'Workplace', text:'Pitch a new idea to skeptical coworkers in under two minutes.'},
+  {id:'sc4', group:'Workplace', text:"Give honest feedback to a colleague whose work has been slipping."},
+  {id:'sc5', group:'Workplace', text:'Ask your manager for a raise, with a clear case for why you deserve it.'},
+  {id:'sc6', group:'Workplace', text:'Introduce yourself and your role to a new team on your first day.'},
+  {id:'sc7', group:'Difficult conversations', text:"Tell a friend you can't lend them money, without damaging the friendship."},
+  {id:'sc8', group:'Difficult conversations', text:'Set a boundary with a family member who keeps overstepping it.'},
+  {id:'sc9', group:'Difficult conversations', text:"Deliver disappointing news to someone who's been expecting good news."},
+  {id:'sc10', group:'Difficult conversations', text:'Apologize for a real mistake without over-explaining or making excuses.'},
+  {id:'sc11', group:'Difficult conversations', text:"Disagree with a friend's plan without shutting them down."},
+  {id:'sc12', group:'Difficult conversations', text:"Tell someone their behavior at an event embarrassed you."},
+  {id:'sc13', group:'Interview answers', text:'"Tell me about a time you failed."'},
+  {id:'sc14', group:'Interview answers', text:'"Why should we choose you over other candidates?"'},
+  {id:'sc15', group:'Interview answers', text:'"What\'s your biggest weakness?" — answer honestly, not with a fake humble-brag.'},
+  {id:'sc16', group:'Interview answers', text:'"Describe a conflict with a coworker and how you resolved it."'},
+  {id:'sc17', group:'Interview answers', text:'"Where do you see yourself in five years?"'},
+  {id:'sc18', group:'Interview answers', text:'"Why do you want to leave your current position?"'},
+  {id:'sc19', group:'Interview answers', text:"Answer a question you weren't expecting, buying yourself a few seconds to think without going silent."},
+  {id:'sc20', group:'Negotiation & persuasion', text:'Negotiate a lower price on something, respectfully but firmly.'},
+  {id:'sc21', group:'Negotiation & persuasion', text:'Convince a friend group to try your restaurant choice instead of theirs.'},
+  {id:'sc22', group:'Negotiation & persuasion', text:'Make the case for a bigger budget on a project you care about.'},
+  {id:'sc23', group:'Negotiation & persuasion', text:"Persuade someone to give a movie or show a chance when they're skeptical."},
+  {id:'sc24', group:'Negotiation & persuasion', text:'Ask for a deadline extension with a real reason, not an excuse.'},
+  {id:'sc25', group:'Negotiation & persuasion', text:"Propose a compromise between two people stuck in a disagreement."},
+];
+
+const IMPROMPTU_TOPICS = [
+  'Is it better to be feared or liked as a leader?',
+  'Should the school day start later?',
+  "What's a rule you think should be broken?",
+  'Is competition good or bad for kids?',
+  'Should tipping be replaced with higher wages?',
+  "What's more valuable: time or money?",
+  'Should social media have a minimum age limit?',
+  'Is it better to specialize in one thing or be a generalist?',
+  'Should college be free?',
+  "What's a tradition worth keeping?",
+  'Is it better to live in a big city or a small town?',
+  'Should everyone be required to learn how to cook?',
+  'Is honesty always the best policy?',
+  'What\'s the most overlooked subject in school?',
+  'Should professional athletes be paid what they are?',
+  'Is patience a skill you can build, or just a personality trait?',
+  'Should voting be mandatory?',
+  'What\'s one law you would change?',
+  'Is it better to have many friends or a few close ones?',
+  'Should homework exist?',
+  'Is failure necessary for real success?',
+  'Should there be a four-day work week?',
+  "What's more important: talent or hard work?",
+  'Should kids get an allowance for doing chores?',
+  "Is it ever okay to lie to protect someone's feelings?",
+];
+
+const REBUTTAL_PROMPTS = [
+  "That's a nice idea, but we tried something like it before and it failed.",
+  "Isn't this just going to cost us more in the long run?",
+  'Why should we trust you on this?',
+  "You don't have enough experience for this, do you?",
+  'That sounds good in theory — but how would it actually work?',
+  "Aren't you contradicting what you said earlier?",
+  'Why didn\'t you bring this up sooner?',
+  'What makes you think this will be different this time?',
+  "Isn't that just your opinion?",
+  'Who else actually agrees with you on this?',
+];
+
+const RHETORIC_DEVICES = [
+  {id:'rd1', name:'Rule of three', seeIt:'"We need courage, we need clarity, and we need to act now."', buildIt:'Rewrite this flat sentence using a rule of three: "We need better schools, healthcare, and jobs."', speakIt:'Record your rewritten version. Pause briefly before the third item, and let your energy build slightly as you say it.'},
+  {id:'rd2', name:'Contrast', seeIt:'"This isn\'t about winning an argument — it\'s about solving a problem."', buildIt:'Rewrite this flat sentence using contrast (not X, but Y): "We should focus on the future."', speakIt:'Record your version. Put a real pause between the two halves, and let your tone shift between them.'},
+  {id:'rd3', name:'Anaphora', seeIt:'"We will listen. We will learn. We will act."', buildIt:'Rewrite this flat sentence using anaphora — repeating an opening phrase: "Our team is dedicated, skilled, and ready."', speakIt:"Record your version. Let the rhythm build with each repetition — don't rush through it."},
+  {id:'rd4', name:'Rhetorical question', seeIt:'"How long are we willing to wait for change?"', buildIt:'Rewrite this flat statement as a rhetorical question: "We should have acted on this already."', speakIt:'Record your version. Pause after the question — let it land instead of rushing to your next sentence.'},
+];
+
+const SELF_REVIEW_CHECKLIST = [
+  'Did I have one clear main point?',
+  'Did I use filler words (um, uh, like)?',
+  'Was my pacing steady, not rushed?',
+  'Did I pause instead of filling silence?',
+  'Which did I lean on — ethos, pathos, or logos — and was that the right call for this audience?',
+  'Did I sound like I actually believed what I was saying?',
+];
+
+const JOKES = [
+  {id:'jk1', group:'One-liners', setup:'I told my computer I needed a break,', punch:'and now it won\'t stop sending me vacation ads.'},
+  {id:'jk2', group:'One-liners', setup:'My bed is a magical place where', punch:'I suddenly remember everything I forgot to do.'},
+  {id:'jk3', group:'One-liners', setup:"I'm not lazy,", punch:"I'm just very committed to conserving energy."},
+  {id:'jk4', group:'One-liners', setup:'I used to think I was indecisive,', punch:"but now I'm not so sure."},
+  {id:'jk5', group:'One-liners', setup:'My diet plan is going great —', punch:"I've successfully avoided the gym for three months straight."},
+  {id:'jk6', group:'One-liners', setup:"I'm on a seafood diet.", punch:'I see food, and then I eat it.'},
+  {id:'jk7', group:'One-liners', setup:"I told myself I'd stop talking to myself.", punch:"We're still working on it."},
+  {id:'jk8', group:'Puns', setup:'I used to be a baker,', punch:"but I couldn't make enough dough."},
+  {id:'jk9', group:'Puns', setup:'The math teacher called in sick with algebra —', punch:'she had too many problems.'},
+  {id:'jk10', group:'Puns', setup:'I stayed up all night wondering where the sun went.', punch:'Then it dawned on me.'},
+  {id:'jk11', group:'Puns', setup:"I'm reading a book about anti-gravity.", punch:"It's impossible to put down."},
+  {id:'jk12', group:'Puns', setup:'A boiled egg every morning', punch:'is hard to beat.'},
+  {id:'jk13', group:'Puns', setup:'I used to be a banker,', punch:'but I lost interest.'},
+  {id:'jk14', group:'Short stories', setup:'My friend said he got fired from the calendar factory.', punch:'Turns out he took a couple days off.'},
+  {id:'jk15', group:'Short stories', setup:'I asked the librarian if they had books on paranoia.', punch:'She whispered, "They\'re right behind you."'},
+  {id:'jk16', group:'Short stories', setup:'I told my dog we were going to the vet.', punch:'He immediately became very interested in the floor.'},
+  {id:'jk17', group:'Short stories', setup:'My grandmother started walking five miles a day when she turned 60. She\'s 97 now,', punch:'and we have no idea where she is.'},
+  {id:'jk18', group:'Short stories', setup:'I bought a ceiling fan yesterday.', punch:"It's a big fan of me too."},
+  {id:'jk19', group:'Short stories', setup:'My friend tried to sell me the dark.', punch:"I told him I'm not buying it."},
+  {id:'jk20', group:'Observational', setup:'Why do "slow down" and "slow up"', punch:'mean the same thing?'},
+  {id:'jk21', group:'Observational', setup:'Why do we call it "rush hour"', punch:'when nothing actually moves?'},
+  {id:'jk22', group:'Observational', setup:"It's strange that the word", punch:'"abbreviation" is so long.'},
+  {id:'jk23', group:'Observational', setup:'Whoever named it "lipstick"', punch:'really oversold what it does for the rest of my day.'},
+  {id:'jk24', group:'Observational', setup:"Why is it that when you're lost while driving,", punch:'you always turn down the radio?'},
+  {id:'jk25', group:'Observational', setup:'I love how "silent" and "listen" have the same letters.', punch:'Coincidence? I think not.'},
+];
+
+const ICEBREAKERS = [
+  "What's the most useless talent you have?",
+  "If you could instantly master one skill, what would it be?",
+  "What's a food combination you love that sounds weird to other people?",
+  "What's the last thing that made you genuinely laugh out loud?",
+  "If your life had a theme song right now, what would it be?",
+  "What's a small thing that instantly puts you in a good mood?",
+  "What's the most overrated thing everyone seems to love?",
+  "If you had to eat one meal for the rest of your life, what would it be?",
+  "What's a rule you secretly think is unnecessary?",
+  "What's something you were sure you'd hate but ended up loving?",
+];
+
+const VOCAL_RANGE = [
+  {id:'vr1', title:'Five-note climb', meta:'Range · 1 min', body:'On the syllable "la," sing or hum up five notes in a simple scale, then back down: la-la-la-la-la, la-la-la-la-la. Repeat starting a little higher each time, only as far as feels comfortable.'},
+  {id:'vr2', title:'Siren slide', meta:'Range · 1 min', body:'On an "oo" sound, glide smoothly from your lowest comfortable note to your highest, and back down, like a slow siren. Do this 5 times, trying to keep it smooth with no cracks or breaks.'},
+  {id:'vr3', title:'Call and response pattern', meta:'Range · 1 min', body:'Hum a short 3-note pattern (like the classic "doorbell" sound — high, low, low-lower). Repeat it 5 times, then try starting it on a different note each time.'},
+];
+
+const EMOTION_LINES = [
+  "I can't believe it's already Monday again.",
+  'The meeting got moved to three o\'clock.',
+  'I found my keys under the couch.',
+];
+const EMOTIONS = ['Excited','Sad','Angry','Sarcastic','Whispering, like a secret','Shouting, urgent','Bored out of your mind','Terrified'];
+
+const MONOLOGUES = [
+  {id:'mn1', title:'The Nervous Astronaut', body:"Okay. Okay, I can do this. Three, two, one... no, wait, they haven't started counting yet. I'm just standing here. This is fine. I trained for two years for this exact moment, and now all I can think about is whether I turned off my stove. I did. I definitely did. Probably. You know what, space is basically just a very long car ride with better views. I've got this."},
+  {id:'mn2', title:'The Overqualified Barista', body:"People ask me why a former vice president of finance is making them a caramel macchiato. Honestly? I've made bigger decisions in this apron than I ever made in that office. Foam or no foam — that's a real choice with real consequences. Nobody's stock portfolio ever thanked me the way this man just did for extra whipped cream."},
+  {id:'mn3', title:"The Time Traveler's Confession", body:"So, funny story. I went back to 1997 — strictly to observe, I promise — and I may have accidentally stepped on a butterfly. Just one. A small one. Everything seems fine? Mostly fine. Well, everyone's left shoe is now on their right foot, but otherwise, totally fine. I'm sure that's unrelated."},
+  {id:'mn4', title:'The Retiring Villain', body:"After careful thought, I've decided to retire from villainy, effective immediately. It's not you, heroes, it's me. My knees aren't what they used to be, and frankly, the monologuing was starting to feel performative. I'll be spending my retirement gardening, and yes, I already know how ironic it is that I'm finally growing something instead of destroying it."},
+  {id:'mn5', title:"The Weather Forecaster's Bad Day", body:"Tonight's forecast: mostly cloudy, with a chance of me crying in the parking lot later. Highs near seventy, lows... honestly, lower than I've felt in years, but that's not really a meteorological category. Bring an umbrella. Not for the rain — I just think you should have one, for you, personally, right now."},
+  {id:'mn6', title:'The Robot Learning Sarcasm', body:"Oh, GREAT. Another. Meeting. I have. Calculated. That this is. The best. Possible. Use of my. Processing power. Is this — was that sarcasm correctly? I have been practicing. Please confirm if that was funny, or if I have simply. Insulted. Everyone. In this. Room."},
+  {id:'mn7', title:'The Wedding Toast Gone Long', body:"...and that's the story of how they met, which, now that I say it out loud, actually has nothing to do with either of them, that was a story about my cousin. Anyway! Where was I. Oh — love! Yes. Love is — I had a whole thing written down, I think I left it in my other jacket. To the happy couple, whoever wrote this speech."},
+  {id:'mn8', title:"The Ghost Who Forgot Why It's Haunting", body:"I've been haunting this house for, I want to say, a very long time. Possibly two hundred years. Possibly since last Tuesday, time is strange for me now. I know I'm supposed to be here for a reason — unfinished business, tragic betrayal, something dramatic — but honestly? I just really like this staircase. Great acoustics for moaning."},
+  {id:'mn9', title:'The Overly Dramatic Weather Complaint', body:"It is RAINING. Again. The sky itself has turned against me, personally, on this, the day I chose to wear suede shoes. Is this a curse? A sign? A deeply petty coincidence? I refuse to believe the universe has nothing better to do than ruin my footwear, and yet, here we are."},
+  {id:'mn10', title:"The Retiring Superhero's Exit Interview", body:"Twenty years. Twenty years of capes, and secret identities, and explaining to my dentist why I keep chipping my teeth on villains' fists. I'm proud of what we did out there. But my back has started making sound effects louder than the ones in the actual fight scenes, and I think that's the universe telling me something."},
+];
+
+const CHARACTER_VOICES = ['Movie trailer announcer','Cheerful game show host','Mysterious villain','Serious news anchor','Overly enthusiastic kids\' show host','Wise old sage','Sports commentator calling the play-by-play'];
+const CHARACTER_LINE = "Today, we're going to try something a little different.";
+
+// ============ STATE ============
+function freshState() {
+  return { completed: {}, volumeSessions: [], activityDates: [] };
+}
+let state;
+try {
+  const saved = localStorage.getItem('podium-state');
+  state = saved ? { ...freshState(), ...JSON.parse(saved) } : freshState();
+} catch (e) { state = freshState(); }
+
+function saveState() {
+  try { localStorage.setItem('podium-state', JSON.stringify(state)); } catch (e) {}
+}
+function markDoneToday() {
+  const today = new Date().toISOString().slice(0,10);
+  if (!state.activityDates.includes(today)) state.activityDates.push(today);
+  saveState();
+}
+function markComplete(id) {
+  state.completed[id] = true;
+  markDoneToday();
+  saveState();
+}
+function currentStreak() {
+  const dates = new Set(state.activityDates);
+  let streak = 0;
+  let d = new Date();
+  while (true) {
+    const key = d.toISOString().slice(0,10);
+    if (dates.has(key)) { streak++; d.setDate(d.getDate()-1); }
+    else break;
+  }
+  return streak;
+}
+
+// ============ NAVIGATION ============
+const views = ['warmup','serious','funny','singact','progress'];
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.onclick = () => {
+    finalizeActiveRecording();
+    views.forEach(v => {
+      document.getElementById('view-'+v).classList.toggle('active', v === btn.dataset.view);
+    });
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+    if (btn.dataset.view === 'progress') renderProgress();
+    stopAllAudio();
+  };
+});
+
+function updateHeader() {
+  document.getElementById('headerStats').innerHTML = `🔥 <b>${currentStreak()}</b> day streak`;
+}
+
+// ============ RECORDING (session-only, one clip alive at a time) ============
+let mediaRecorder = null, audioChunks = [], currentStream = null;
+let activeRecordingFinalize = null; // cleanly stops+resets whichever card is currently recording, if any
+let lastRecordingAudioEl = null, lastRecordingURL = null;
+
+function stopAllAudio() {
+  if (lastRecordingAudioEl) { try { lastRecordingAudioEl.pause(); } catch(e){} }
+}
+function clearLastRecording() {
+  if (lastRecordingAudioEl && lastRecordingAudioEl.parentNode) {
+    try { lastRecordingAudioEl.pause(); } catch(e){}
+    lastRecordingAudioEl.parentNode.innerHTML = '';
+  }
+  if (lastRecordingURL) {
+    try { URL.revokeObjectURL(lastRecordingURL); } catch(e){}
+  }
+  lastRecordingAudioEl = null;
+  lastRecordingURL = null;
+}
+function finalizeActiveRecording() {
+  if (activeRecordingFinalize) {
+    const fn = activeRecordingFinalize;
+    activeRecordingFinalize = null;
+    fn();
+  }
+}
+async function startRecording(cardId, statusEl, playWrapEl, volumeCtx, onForceStopUI) {
+  finalizeActiveRecording();
+  clearLastRecording();
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    currentStream = stream;
+    audioChunks = [];
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(audioChunks, { type: 'audio/webm' });
+      const url = URL.createObjectURL(blob);
+      playWrapEl.innerHTML = `<audio controls src="${url}" style="width:100%;margin-top:10px;"></audio>`;
+      lastRecordingAudioEl = playWrapEl.querySelector('audio');
+      lastRecordingURL = url;
+      stream.getTracks().forEach(t => t.stop());
+      if (volumeCtx) volumeCtx.stop();
+    };
+    mediaRecorder.start();
+    statusEl.textContent = '● Recording…';
+    statusEl.style.color = 'var(--on-air-bright)';
+    if (volumeCtx) volumeCtx.start(stream);
+    markComplete(cardId);
+    activeRecordingFinalize = () => { stopRecording(statusEl); if (onForceStopUI) onForceStopUI(); };
+    return true;
+  } catch (err) {
+    statusEl.textContent = 'Microphone access needed to record.';
+    statusEl.style.color = 'var(--cream-dim)';
+    return false;
+  }
+}
+function stopRecording(statusEl) {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+  statusEl.textContent = '';
+}
+
+// ============ VU METER (Web Audio volume analysis) ============
+function makeVolumeMeter(needleEl, readoutEl, summaryTarget) {
+  let audioCtx=null, analyser=null, dataArr=null, rafId=null, samples=[];
+  function loop() {
+    analyser.getByteTimeDomainData(dataArr);
+    let sum=0;
+    for (let i=0;i<dataArr.length;i++){ const v=(dataArr[i]-128)/128; sum+=v*v; }
+    const rms = Math.sqrt(sum/dataArr.length);
+    const pct = Math.min(100, Math.round(rms*400));
+    samples.push(pct);
+    const angle = -90 + (pct/100)*180;
+    if (needleEl) needleEl.setAttribute('transform', `rotate(${angle} 60 60)`);
+    if (readoutEl) readoutEl.textContent = pct < 15 ? 'too quiet' : pct > 85 ? 'straining' : 'good range';
+    rafId = requestAnimationFrame(loop);
+  }
+  return {
+    start(stream) {
+      audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 512;
+      dataArr = new Uint8Array(analyser.fftSize);
+      audioCtx.createMediaStreamSource(stream).connect(analyser);
+      samples = [];
+      loop();
+    },
+    stop() {
+      if (rafId) cancelAnimationFrame(rafId);
+      if (audioCtx) audioCtx.close();
+      if (samples.length) {
+        const inRange = samples.filter(s => s>=15 && s<=85).length;
+        const pct = Math.round((inRange/samples.length)*100);
+        state.volumeSessions.push({date:new Date().toISOString().slice(0,10), pct});
+        if (state.volumeSessions.length>30) state.volumeSessions.shift();
+        saveState();
+      }
+    }
+  };
+}
+function vuMeterSVG() {
+  return `<svg width="120" height="70" viewBox="0 0 120 70">
+    <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke="var(--line)" stroke-width="6"/>
+    <path d="M 10 60 A 50 50 0 0 1 45 15" fill="none" stroke="var(--sage)" stroke-width="6" opacity="0.5"/>
+    <path d="M 45 15 A 50 50 0 0 1 75 15" fill="none" stroke="var(--brass)" stroke-width="6" opacity="0.5"/>
+    <path d="M 75 15 A 50 50 0 0 1 110 60" fill="none" stroke="var(--on-air)" stroke-width="6" opacity="0.5"/>
+    <g class="needle" transform="rotate(-90 60 60)"><line x1="60" y1="60" x2="60" y2="18" stroke="var(--cream)" stroke-width="2.5"/></g>
+    <circle cx="60" cy="60" r="4" fill="var(--cream)"/>
+  </svg>`;
+}
+
+// ============ TIMER WIDGET ============
+function fmtTime(sec) {
+  const m = Math.floor(sec/60).toString().padStart(2,'0');
+  const s = (sec%60).toString().padStart(2,'0');
+  return `${m}:${s}`;
+}
+function timerWidgetHTML(presets) {
+  const presetRow = presets && presets.length > 1
+    ? `<div class="timer-preset-row" data-role="timer-presets">
+        ${presets.map((p,i) => `<button class="timer-preset ${i===0?'active':''}" data-sec="${p}">${p}s</button>`).join('')}
+      </div>`
+    : '';
+  return `
+    <div class="timer-wrap">
+      ${presetRow}
+      <div class="timer-display" data-role="timer-display">${fmtTime(presets[0])}</div>
+      <div class="timer-btn-row">
+        <button class="btn ghost" data-role="timer-start">▶️ Start</button>
+        <button class="btn ghost" data-role="timer-reset">↺ Reset</button>
+      </div>
+    </div>
+  `;
+}
+function wireTimer(container, defaultSeconds) {
+  const displayEl = container.querySelector('[data-role="timer-display"]');
+  const startBtn = container.querySelector('[data-role="timer-start"]');
+  const resetBtn = container.querySelector('[data-role="timer-reset"]');
+  const presetsEl = container.querySelector('[data-role="timer-presets"]');
+  let total = defaultSeconds, remaining = defaultSeconds, interval = null, running = false;
+  function render() {
+    displayEl.textContent = fmtTime(remaining);
+    displayEl.classList.toggle('done', remaining <= 0);
+  }
+  function stop() {
+    running = false;
+    startBtn.textContent = '▶️ Start';
+    if (interval) clearInterval(interval);
+    interval = null;
+  }
+  function tick() {
+    remaining--;
+    if (remaining <= 0) { remaining = 0; stop(); }
+    render();
+  }
+  function start() {
+    if (running || remaining <= 0) return;
+    running = true;
+    startBtn.textContent = '⏸ Pause';
+    interval = setInterval(tick, 1000);
+  }
+  function reset() {
+    stop();
+    remaining = total;
+    render();
+  }
+  startBtn.onclick = () => running ? stop() : start();
+  resetBtn.onclick = reset;
+  if (presetsEl) {
+    presetsEl.querySelectorAll('.timer-preset').forEach(btn => {
+      btn.onclick = () => {
+        presetsEl.querySelectorAll('.timer-preset').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        total = parseInt(btn.dataset.sec, 10);
+        reset();
+      };
+    });
+  }
+  render();
+}
+
+// ============ SHARED CARD BUILDER ============
+function recordControls(cardId, withMeter) {
+  const meterHTML = withMeter ? `
+    <div class="vu-wrap">
+      ${vuMeterSVG()}
+      <div class="vu-readout" data-role="vu-readout">—</div>
+    </div>` : '';
+  return `
+    ${meterHTML}
+    <div class="btn-row">
+      <button class="btn record" data-role="rec-btn">🔴 Record</button>
+    </div>
+    <div data-role="rec-status" style="font-family:var(--font-mono);font-size:11px;margin-top:6px;min-height:14px;"></div>
+    <div data-role="play-wrap"></div>
+  `;
+}
+function wireRecordButton(container, cardId, withMeter) {
+  const btn = container.querySelector('[data-role="rec-btn"]');
+  const statusEl = container.querySelector('[data-role="rec-status"]');
+  const playWrap = container.querySelector('[data-role="play-wrap"]');
+  const needle = withMeter ? container.querySelector('.needle') : null;
+  const readout = withMeter ? container.querySelector('[data-role="vu-readout"]') : null;
+  const volMeter = withMeter ? makeVolumeMeter(needle, readout) : null;
+  let recording = false;
+  const resetUI = () => { recording = false; btn.textContent = '🔴 Record'; btn.classList.remove('recording'); };
+  btn.onclick = async () => {
+    if (!recording) {
+      playWrap.innerHTML = '';
+      const ok = await startRecording(cardId, statusEl, playWrap, volMeter, resetUI);
+      if (ok) { recording = true; btn.textContent = '⏹ Stop'; btn.classList.add('recording'); }
+    } else {
+      stopRecording(statusEl);
+      activeRecordingFinalize = null;
+      resetUI();
+    }
+  };
+}
+
+// ============ TAB 1: WARM-UPS ============
+const WARMUP_SECTIONS = [
+  {key:'breathing', label:'Breathing', data: BREATHING, type:'exercise'},
+  {key:'vocal', label:'Vocal', data: VOCAL_WARMUPS, type:'exercise'},
+  {key:'twisters', label:'Tongue twisters', data: TONGUE_TWISTERS, type:'twister'},
+  {key:'rate', label:'Rate & prosody', data: [...RATE_CONTROL, ...PROSODY_DRILLS, ...FILLER_DRILLS], type:'exercise'},
+  {key:'projection', label:'Projection', data: PROJECTION_DRILLS, type:'exercise'},
+];
+let activeWarmupFilter = 'breathing';
+
+function renderWarmupFilters() {
+  const el = document.getElementById('warmupFilters');
+  el.innerHTML = WARMUP_SECTIONS.map(s =>
+    `<button class="filter-chip ${s.key===activeWarmupFilter?'active':''}" data-key="${s.key}">${s.label}</button>`
+  ).join('');
+  el.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.onclick = () => { activeWarmupFilter = chip.dataset.key; renderWarmupFilters(); renderWarmupList(); };
+  });
+}
+function renderWarmupList() {
+  finalizeActiveRecording();
+  const section = WARMUP_SECTIONS.find(s => s.key === activeWarmupFilter);
+  const list = document.getElementById('warmupList');
+  if (section.type === 'twister') {
+    const groups = {};
+    section.data.forEach(t => { (groups[t.group] = groups[t.group]||[]).push(t); });
+    list.innerHTML = Object.entries(groups).map(([group, items]) => `
+      <div class="section-label">${group}</div>
+      ${items.map(t => `
+        <div class="card">
+          <div class="card-body" style="font-size:16px;">${t.text}</div>
+        </div>
+      `).join('')}
+    `).join('');
+    return;
+  }
+  list.innerHTML = section.data.map(ex => `
+    <div class="card" id="card-${ex.id}">
+      <div class="card-meta">${ex.meta||''}</div>
+      <div class="card-title">${ex.title}</div>
+      <div class="card-body">${ex.body}</div>
+      ${ex.hint ? `<div class="card-hint">💡 ${ex.hint}</div>` : ''}
+      ${ex.hasTimer ? timerWidgetHTML(ex.hasTimer) : ''}
+      ${recordControls(ex.id, !!ex.hasVolumeMeter)}
+    </div>
+  `).join('');
+  section.data.forEach(ex => {
+    const cardEl = document.getElementById('card-'+ex.id);
+    if (ex.hasTimer) wireTimer(cardEl, ex.hasTimer[0]);
+    wireRecordButton(cardEl, ex.id, !!ex.hasVolumeMeter);
+  });
+}
+
+// ============ TAB 2: SERIOUS CONVERSATIONS ============
+const SERIOUS_SECTIONS = ['Frameworks','Scenarios','Impromptu','Rebuttal','Rhetorical toolkit','Self-review'];
+let activeSeriousFilter = 'Frameworks';
+
+function renderSeriousFilters() {
+  const el = document.getElementById('seriousFilters');
+  el.innerHTML = SERIOUS_SECTIONS.map(s =>
+    `<button class="filter-chip ${s===activeSeriousFilter?'active':''}" data-key="${s}">${s}</button>`
+  ).join('');
+  el.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.onclick = () => { activeSeriousFilter = chip.dataset.key; renderSeriousFilters(); renderSeriousList(); };
+  });
+}
+
+function renderSeriousList() {
+  finalizeActiveRecording();
+  const list = document.getElementById('seriousList');
+  if (activeSeriousFilter === 'Frameworks') {
+    list.innerHTML = FRAMEWORKS.map(f => `
+      <div class="card">
+        <div class="card-meta">${f.meta}</div>
+        <div class="card-title">${f.title}</div>
+        <div class="card-body">${f.body}</div>
+      </div>
+    `).join('');
+    return;
+  }
+  if (activeSeriousFilter === 'Scenarios') {
+    const groups = {};
+    SCENARIOS.forEach(s => { (groups[s.group] = groups[s.group]||[]).push(s); });
+    list.innerHTML = Object.entries(groups).map(([group, items]) => `
+      <div class="section-label">${group}</div>
+      ${items.map(s => `
+        <div class="card" id="card-${s.id}">
+          <div class="card-body">${s.text}</div>
+          ${recordControls(s.id, false)}
+        </div>
+      `).join('')}
+    `).join('');
+    SCENARIOS.forEach(s => wireRecordButton(document.getElementById('card-'+s.id), s.id, false));
+    return;
+  }
+  if (activeSeriousFilter === 'Impromptu') {
+    list.innerHTML = `
+      <div class="card">
+        <div class="card-meta">60–90 seconds · No prep</div>
+        <div class="card-title" id="impromptuTopic">${IMPROMPTU_TOPICS[0]}</div>
+        <div class="card-hint">💡 Pick a topic, then speak right away. The whole point is skipping the planning stage.</div>
+        <div class="btn-row"><button class="btn ghost" id="newImpromptuBtn">🎲 New random topic</button></div>
+        ${timerWidgetHTML([60,90])}
+        ${recordControls('impromptu', false)}
+      </div>
+    `;
+    document.getElementById('newImpromptuBtn').onclick = () => {
+      const t = IMPROMPTU_TOPICS[Math.floor(Math.random()*IMPROMPTU_TOPICS.length)];
+      document.getElementById('impromptuTopic').textContent = t;
+    };
+    wireTimer(list.querySelector('.card'), 60);
+    wireRecordButton(list.querySelector('.card'), 'impromptu', false);
+    return;
+  }
+  if (activeSeriousFilter === 'Rebuttal') {
+    list.innerHTML = REBUTTAL_PROMPTS.map((p,i) => `
+      <div class="card" id="card-reb${i}">
+        <div class="card-meta">Bridge, then answer</div>
+        <div class="card-body">"${p}"</div>
+        <div class="card-hint">💡 Acknowledge it in one sentence, then steer to your actual point — don't get defensive.</div>
+        ${recordControls('reb'+i, false)}
+      </div>
+    `).join('');
+    REBUTTAL_PROMPTS.forEach((p,i) => wireRecordButton(document.getElementById('card-reb'+i), 'reb'+i, false));
+    return;
+  }
+  if (activeSeriousFilter === 'Rhetorical toolkit') {
+    list.innerHTML = `
+      <div class="card">
+        <div class="card-title" style="font-size:17px;">Why varying techniques matters</div>
+        <div class="card-body" style="font-size:14px;margin-top:8px;">Leaning on one device the whole time makes a speech predictable. Each device below does a different job — combining them, not just naming them, is what actually signals mastery.</div>
+      </div>
+      ${RHETORIC_DEVICES.map(d => `
+        <div class="card">
+          <div class="card-title">${d.name}</div>
+          <div class="section-label" style="margin-top:14px;">See it</div>
+          <div class="card-body">${d.seeIt}</div>
+          <div class="section-label">Build it</div>
+          <div class="card-body">${d.buildIt}</div>
+          <textarea placeholder="Type your rewritten version here..." data-role="rewrite-${d.id}"></textarea>
+          <div class="section-label">Speak it</div>
+          <div class="card-body" style="font-size:14px;">${d.speakIt}</div>
+          ${recordControls(d.id, false)}
+        </div>
+      `).join('')}
+      <div class="card">
+        <div class="card-title" style="font-size:17px;">Challenge tier</div>
+        <div class="card-body" style="margin-top:8px;">Build a 60-second answer to any scenario in the Scenarios tab using at least two of these techniques together.</div>
+      </div>
+    `;
+    RHETORIC_DEVICES.forEach(d => wireRecordButton(list.querySelectorAll('.card')[RHETORIC_DEVICES.indexOf(d)+1], d.id, false));
+    return;
+  }
+  if (activeSeriousFilter === 'Self-review') {
+    list.innerHTML = `
+      <div class="card">
+        <div class="card-title" style="font-size:18px;margin-bottom:6px;">After any recording, check yourself</div>
+        ${SELF_REVIEW_CHECKLIST.map((c,i) => `
+          <div class="checklist-item">
+            <input type="checkbox" id="chk-${i}">
+            <label for="chk-${i}">${c}</label>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    return;
+  }
+}
+
+// ============ TAB 3: FUNNY / JOKES ============
+const FUNNY_SECTIONS = ['Jokes','Icebreakers','Tell it back'];
+let activeFunnyFilter = 'Jokes';
+let tellItBackCurrent = null;
+
+function renderFunnyFilters() {
+  const el = document.getElementById('funnyFilters');
+  el.innerHTML = FUNNY_SECTIONS.map(s =>
+    `<button class="filter-chip ${s===activeFunnyFilter?'active':''}" data-key="${s}">${s}</button>`
+  ).join('');
+  el.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.onclick = () => { activeFunnyFilter = chip.dataset.key; renderFunnyFilters(); renderFunnyList(); };
+  });
+}
+function renderFunnyList() {
+  finalizeActiveRecording();
+  const list = document.getElementById('funnyList');
+  if (activeFunnyFilter === 'Jokes') {
+    const groups = {};
+    JOKES.forEach(j => { (groups[j.group] = groups[j.group]||[]).push(j); });
+    list.innerHTML = Object.entries(groups).map(([group, items]) => `
+      <div class="section-label">${group}</div>
+      ${items.map(j => `
+        <div class="card" id="card-${j.id}">
+          <div class="card-body">${j.setup}<br><span style="color:var(--brass-glow);font-family:var(--font-mono);font-size:11px;">[pause]</span><br>${j.punch}</div>
+          ${recordControls(j.id, false)}
+        </div>
+      `).join('')}
+    `).join('');
+    JOKES.forEach(j => wireRecordButton(document.getElementById('card-'+j.id), j.id, false));
+    return;
+  }
+  if (activeFunnyFilter === 'Icebreakers') {
+    list.innerHTML = ICEBREAKERS.map((q,i) => `
+      <div class="card"><div class="card-body">${q}</div></div>
+    `).join('');
+    return;
+  }
+  if (activeFunnyFilter === 'Tell it back') {
+    if (!tellItBackCurrent) tellItBackCurrent = JOKES[Math.floor(Math.random()*JOKES.length)];
+    list.innerHTML = `
+      <div class="card">
+        <div class="card-meta">Read once, then retell it in your own words</div>
+        <div class="card-body" id="tibText">${tellItBackCurrent.setup} ${tellItBackCurrent.punch}</div>
+        <div class="btn-row">
+          <button class="btn ghost" id="tibHideBtn">🙈 Hide it</button>
+          <button class="btn ghost" id="tibNewBtn">🎲 New joke</button>
+        </div>
+        ${recordControls('tellback', false)}
+      </div>
+    `;
+    document.getElementById('tibHideBtn').onclick = () => {
+      document.getElementById('tibText').style.filter = 'blur(6px)';
+    };
+    document.getElementById('tibNewBtn').onclick = () => {
+      tellItBackCurrent = JOKES[Math.floor(Math.random()*JOKES.length)];
+      renderFunnyList();
+    };
+    wireRecordButton(list.querySelector('.card'), 'tellback', false);
+    return;
+  }
+}
+
+// ============ TAB 4: SING / ACT ============
+const SINGACT_SECTIONS = ['Vocal range','Emotion switch','Monologues','Character voices'];
+let activeSingactFilter = 'Vocal range';
+
+function renderSingactFilters() {
+  const el = document.getElementById('singactFilters');
+  el.innerHTML = SINGACT_SECTIONS.map(s =>
+    `<button class="filter-chip ${s===activeSingactFilter?'active':''}" data-key="${s}">${s}</button>`
+  ).join('');
+  el.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.onclick = () => { activeSingactFilter = chip.dataset.key; renderSingactFilters(); renderSingactList(); };
+  });
+}
+function renderSingactList() {
+  finalizeActiveRecording();
+  const list = document.getElementById('singactList');
+  if (activeSingactFilter === 'Vocal range') {
+    list.innerHTML = VOCAL_RANGE.map(v => `
+      <div class="card" id="card-${v.id}">
+        <div class="card-meta">${v.meta}</div>
+        <div class="card-title">${v.title}</div>
+        <div class="card-body">${v.body}</div>
+        ${recordControls(v.id, false)}
+      </div>
+    `).join('');
+    VOCAL_RANGE.forEach(v => wireRecordButton(document.getElementById('card-'+v.id), v.id, false));
+    return;
+  }
+  if (activeSingactFilter === 'Emotion switch') {
+    list.innerHTML = `
+      <div class="card">
+        <div class="card-meta">Same line, different feeling — every time</div>
+        <div class="card-title" id="emoLine">"${EMOTION_LINES[0]}"</div>
+        <div class="btn-row"><button class="btn ghost" id="newLineBtn">🔁 New line</button></div>
+      </div>
+      ${EMOTIONS.map((e,i) => `
+        <div class="card" id="card-emo${i}">
+          <div class="card-meta">Read the line above as:</div>
+          <div class="card-title" style="font-size:20px;">${e}</div>
+          ${recordControls('emo'+i, false)}
+        </div>
+      `).join('')}
+    `;
+    document.getElementById('newLineBtn').onclick = () => {
+      const cur = document.getElementById('emoLine').textContent;
+      let next;
+      do { next = EMOTION_LINES[Math.floor(Math.random()*EMOTION_LINES.length)]; } while ('"'+next+'"' === cur && EMOTION_LINES.length>1);
+      document.getElementById('emoLine').textContent = '"'+next+'"';
+    };
+    EMOTIONS.forEach((e,i) => wireRecordButton(document.getElementById('card-emo'+i), 'emo'+i, false));
+    return;
+  }
+  if (activeSingactFilter === 'Monologues') {
+    list.innerHTML = MONOLOGUES.map(m => `
+      <div class="card" id="card-${m.id}">
+        <div class="card-title">${m.title}</div>
+        <div class="card-body" style="margin-top:8px;font-style:italic;">${m.body}</div>
+        ${recordControls(m.id, false)}
+      </div>
+    `).join('');
+    MONOLOGUES.forEach(m => wireRecordButton(document.getElementById('card-'+m.id), m.id, false));
+    return;
+  }
+  if (activeSingactFilter === 'Character voices') {
+    list.innerHTML = `
+      <div class="card">
+        <div class="card-meta">Read this line in each voice below</div>
+        <div class="card-title" style="font-size:18px;">"${CHARACTER_LINE}"</div>
+      </div>
+      ${CHARACTER_VOICES.map((c,i) => `
+        <div class="card" id="card-cv${i}">
+          <div class="card-title" style="font-size:20px;">${c}</div>
+          ${recordControls('cv'+i, false)}
+        </div>
+      `).join('')}
+    `;
+    CHARACTER_VOICES.forEach((c,i) => wireRecordButton(document.getElementById('card-cv'+i), 'cv'+i, false));
+    return;
+  }
+}
+
+// ============ PROGRESS TAB ============
+function renderProgress() {
+  updateHeader();
+  const totalActivities = BREATHING.length+VOCAL_WARMUPS.length+RATE_CONTROL.length+PROSODY_DRILLS.length+FILLER_DRILLS.length+PROJECTION_DRILLS.length+SCENARIOS.length+RHETORIC_DEVICES.length+JOKES.length+VOCAL_RANGE.length+EMOTIONS.length+MONOLOGUES.length+CHARACTER_VOICES.length;
+  const doneCount = Object.keys(state.completed).length;
+  document.getElementById('progressStats').innerHTML = `
+    <div class="stat-box"><div class="stat-num">${currentStreak()}</div><div class="stat-lbl">Day streak</div></div>
+    <div class="stat-box"><div class="stat-num">${doneCount}</div><div class="stat-lbl">Exercises done</div></div>
+    <div class="stat-box"><div class="stat-num">${state.activityDates.length}</div><div class="stat-lbl">Total sessions</div></div>
+    <div class="stat-box"><div class="stat-num">${Math.round((doneCount/totalActivities)*100)}%</div><div class="stat-lbl">Of all content</div></div>
+  `;
+  const vTrend = document.getElementById('volumeTrendCard');
+  if (!state.volumeSessions.length) {
+    vTrend.innerHTML = `<div class="card-body" style="font-size:13px;color:var(--cream-dim);">No projection sessions recorded yet. Try the Projection drills in Warm-ups — each one quietly tracks how much of the time you were in a comfortable, audible range.</div>`;
+  } else {
+    const recent = state.volumeSessions.slice(-10);
+    const avg = Math.round(recent.reduce((a,s)=>a+s.pct,0)/recent.length);
+    vTrend.innerHTML = `
+      <div class="card-body">Average in-range: <b style="color:var(--brass-glow);">${avg}%</b> across your last ${recent.length} projection session${recent.length>1?'s':''}</div>
+      <div style="display:flex;align-items:flex-end;gap:4px;height:60px;margin-top:14px;">
+        ${recent.map(s => `<div style="flex:1;background:var(--brass);opacity:0.7;height:${Math.max(6,s.pct)}%;border-radius:3px 3px 0 0;" title="${s.pct}%"></div>`).join('')}
+      </div>
+    `;
+  }
+  const cal = document.getElementById('calendarGrid');
+  const dates = new Set(state.activityDates);
+  let html = '';
+  for (let i=27;i>=0;i--) {
+    const d = new Date(); d.setDate(d.getDate()-i);
+    const key = d.toISOString().slice(0,10);
+    const active = dates.has(key);
+    html += `<div style="aspect-ratio:1;border-radius:4px;background:${active?'var(--brass)':'var(--panel-2)'};"></div>`;
+  }
+  cal.innerHTML = html;
+  document.getElementById('sessionLog').innerHTML = state.activityDates.length
+    ? `<div class="card"><div class="card-body" style="font-size:13px;">Last active: ${state.activityDates[state.activityDates.length-1]}. Total practice days logged: ${state.activityDates.length}.</div></div>`
+    : `<div class="card"><div class="card-body" style="font-size:13px;color:var(--cream-dim);">Nothing logged yet — complete any exercise to start your streak.</div></div>`;
+}
+
+document.getElementById('resetLink').onclick = () => {
+  if (confirm('Reset all progress? This cannot be undone.')) {
+    state = freshState();
+    saveState();
+    renderProgress();
+  }
+};
+
+// ============ PRINT SHEETS ============
+document.getElementById('printBtn').onclick = () => {
+  const twisterHTML = TONGUE_TWISTERS.map(t => `<li>${t.text}</li>`).join('');
+  const frameworkHTML = FRAMEWORKS.map(f => `<p><b>${f.title}</b> — ${f.body}</p>`).join('');
+  const rhetoricHTML = RHETORIC_DEVICES.map(d => `<p><b>${d.name}:</b> ${d.seeIt}</p>`).join('');
+  document.getElementById('printSheetArea').innerHTML = `
+    <h2>Podium — Reference Sheets</h2>
+    <h3>Tongue Twisters</h3>
+    <ol>${twisterHTML}</ol>
+    <h3>Frameworks</h3>
+    ${frameworkHTML}
+    <h3>Rhetorical Toolkit</h3>
+    ${rhetoricHTML}
+  `;
+  window.print();
+};
+
+// ============ INIT ============
+renderWarmupFilters();
+renderWarmupList();
+renderSeriousFilters();
+renderSeriousList();
+renderFunnyFilters();
+renderFunnyList();
+renderSingactFilters();
+renderSingactList();
+updateHeader();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+
+
+
+
+
+</script>
+</body>
+</html>
