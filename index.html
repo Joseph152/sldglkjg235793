@@ -584,6 +584,15 @@ function finalizeActiveRecording() {
     fn();
   }
 }
+function pickSupportedMimeType() {
+  const candidates = ['audio/mp4', 'audio/aac', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'];
+  if (window.MediaRecorder && MediaRecorder.isTypeSupported) {
+    for (const type of candidates) {
+      if (MediaRecorder.isTypeSupported(type)) return type;
+    }
+  }
+  return undefined; // let the browser pick if none of our candidates are explicitly supported
+}
 async function startRecording(cardId, statusEl, playWrapEl, volumeCtx, onForceStopUI) {
   finalizeActiveRecording();
   clearLastRecording();
@@ -591,14 +600,33 @@ async function startRecording(cardId, statusEl, playWrapEl, volumeCtx, onForceSt
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     currentStream = stream;
     audioChunks = [];
-    mediaRecorder = new MediaRecorder(stream);
-    const actualMimeType = mediaRecorder.mimeType || 'audio/webm';
-    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    const preferredType = pickSupportedMimeType();
+    mediaRecorder = preferredType ? new MediaRecorder(stream, { mimeType: preferredType }) : new MediaRecorder(stream);
+    const actualMimeType = mediaRecorder.mimeType || preferredType || 'audio/mp4';
+    mediaRecorder.ondataavailable = e => { if (e.data && e.data.size > 0) audioChunks.push(e.data); };
     mediaRecorder.onstop = () => {
       const blob = new Blob(audioChunks, { type: actualMimeType });
       const url = URL.createObjectURL(blob);
-      playWrapEl.innerHTML = `<audio controls src="${url}" style="width:100%;margin-top:10px;"></audio>`;
-      lastRecordingAudioEl = playWrapEl.querySelector('audio');
+      playWrapEl.innerHTML = `
+        <audio controls src="${url}" style="width:100%;margin-top:10px;"></audio>
+        <div data-role="playback-fallback" style="display:none;font-size:12px;color:var(--cream-dim);margin-top:6px;">
+          Playback isn't working on this device. <a href="${url}" download="recording.${actualMimeType.includes('mp4')?'m4a':'webm'}" style="color:var(--brass-glow);">Download the recording</a> to play it another way.
+        </div>
+      `;
+      const audioEl = playWrapEl.querySelector('audio');
+      const fallbackEl = playWrapEl.querySelector('[data-role="playback-fallback"]');
+      // Known Safari quirk: recorded clips sometimes report duration=Infinity until "nudged"
+      audioEl.addEventListener('loadedmetadata', () => {
+        if (audioEl.duration === Infinity || isNaN(audioEl.duration)) {
+          audioEl.currentTime = 1e7;
+          audioEl.addEventListener('timeupdate', function fixDuration() {
+            audioEl.removeEventListener('timeupdate', fixDuration);
+            audioEl.currentTime = 0;
+          }, { once: true });
+        }
+      });
+      audioEl.addEventListener('error', () => { fallbackEl.style.display = 'block'; });
+      lastRecordingAudioEl = audioEl;
       lastRecordingURL = url;
       stream.getTracks().forEach(t => t.stop());
       if (volumeCtx) volumeCtx.stop();
