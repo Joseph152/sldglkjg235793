@@ -193,14 +193,6 @@ textarea{min-height:90px;resize:vertical;}
 .checklist-item:last-child{border-bottom:none;}
 .checklist-item input{margin-top:3px;accent-color:var(--brass);}
 .checklist-item label{font-size:14px;color:var(--cream);line-height:1.4;}
-
-@media print{
-  body *{visibility:hidden;}
-  #printSheetArea, #printSheetArea *{visibility:visible;}
-  #printSheetArea{position:absolute;left:0;top:0;width:100%;color:#111;background:#fff;}
-  .tabbar{display:none;}
-}
-#printSheetArea{display:none;}
 </style>
 </head>
 <body>
@@ -258,22 +250,32 @@ textarea{min-height:90px;resize:vertical;}
 </div>
 
 <!-- ============ PROGRESS ============ -->
-<div class="view" id="view-progress">
+<div class="view" id="view-overview">
   <div class="tab-header">
-    <div class="tab-eyebrow">Overview</div>
-    <h1 class="tab-title">Progress</h1>
+    <div class="tab-eyebrow">Read before you speak</div>
+    <h1 class="tab-title">Overview</h1>
+    <p class="tab-sub">The core things to actually remember, above every individual drill.</p>
   </div>
-  <div class="stat-grid" id="progressStats"></div>
-  <div class="section-label">Volume trend</div>
-  <div class="card" id="volumeTrendCard"></div>
-  <div class="section-label">Streak calendar</div>
-  <div class="card"><div id="calendarGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;"></div></div>
-  <div class="section-label">Session log</div>
-  <div id="sessionLog"></div>
-  <div class="btn-row">
-    <button class="btn" id="printBtn">🖨️ Print reference sheets</button>
+  <div class="card">
+    <div class="card-title">1. Slow down and take pauses</div>
+    <div class="card-body">This fixes people not understanding you, gives you more time to think, and makes you more confident.</div>
   </div>
-  <div class="storage-note">Progress saves to this browser only. <span id="resetLink">Reset all progress</span></div>
+  <div class="card">
+    <div class="card-title">2. Relax your jaw, shoulders, and neck</div>
+    <div class="card-body">A tense body is not a strong voice.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">3. Use hand and face gestures</div>
+    <div class="card-body">This is what gets you out of a monotone voice.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">4. A simple answer beats a novel</div>
+    <div class="card-body">Sometimes a simple answer is better than a novel. And if you can't reason with someone, remember — Jesus tried convincing people, and no words or arguments got through. That's not necessarily a failure on your part.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">5. Let statements end low, not high</div>
+    <div class="card-body">Ending a sentence with a rising pitch (uptalk) makes even a confident point sound like a question — like you're asking permission instead of stating a fact.</div>
+  </div>
 </div>
 
 <div class="tabbar">
@@ -281,10 +283,8 @@ textarea{min-height:90px;resize:vertical;}
   <button class="tab-btn" data-view="serious"><span class="icon">💼</span><span class="label">Serious</span></button>
   <button class="tab-btn" data-view="funny"><span class="icon">😄</span><span class="label">Funny</span></button>
   <button class="tab-btn" data-view="singact"><span class="icon">🎭</span><span class="label">Sing/Act</span></button>
-  <button class="tab-btn" data-view="progress"><span class="icon">📊</span><span class="label">Progress</span></button>
+  <button class="tab-btn" data-view="overview"><span class="icon">📋</span><span class="label">Overview</span></button>
 </div>
-
-<div id="printSheetArea"></div>
 
 <script>
 // ============ CONTENT DATA ============
@@ -550,7 +550,7 @@ function currentStreak() {
 }
 
 // ============ NAVIGATION ============
-const views = ['warmup','serious','funny','singact','progress'];
+const views = ['warmup','serious','funny','singact','overview'];
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.onclick = () => {
     finalizeActiveRecording();
@@ -558,7 +558,6 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
       document.getElementById('view-'+v).classList.toggle('active', v === btn.dataset.view);
     });
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
-    if (btn.dataset.view === 'progress') renderProgress();
     stopAllAudio();
   };
 });
@@ -1394,67 +1393,6 @@ function renderSingactList() {
     return;
   }
 }
-
-// ============ PROGRESS TAB ============
-function renderProgress() {
-  updateHeader();
-  const totalActivities = BREATHING.length+VOCAL_WARMUPS.length+RATE_CONTROL.length+PROSODY_DRILLS.length+FILLER_DRILLS.length+PROJECTION_DRILLS.length+EMPHASIS_DRILLS.length+VOCAL_RANGE.length+EMOTIONS.length+MONOLOGUES.length+CHARACTER_VOICES.length+FAKE_LAUGH.length;
-  const doneCount = Object.keys(state.completed).length;
-  document.getElementById('progressStats').innerHTML = `
-    <div class="stat-box"><div class="stat-num">${currentStreak()}</div><div class="stat-lbl">Day streak</div></div>
-    <div class="stat-box"><div class="stat-num">${doneCount}</div><div class="stat-lbl">Exercises done</div></div>
-    <div class="stat-box"><div class="stat-num">${state.activityDates.length}</div><div class="stat-lbl">Total sessions</div></div>
-    <div class="stat-box"><div class="stat-num">${Math.round((doneCount/totalActivities)*100)}%</div><div class="stat-lbl">Of all content</div></div>
-  `;
-  const vTrend = document.getElementById('volumeTrendCard');
-  if (!state.volumeSessions.length) {
-    vTrend.innerHTML = `<div class="card-body" style="font-size:13px;color:var(--cream-dim);">No projection sessions recorded yet. Try the Projection drills in Warm-ups — each one quietly tracks how much of the time you were in a comfortable, audible range.</div>`;
-  } else {
-    const recent = state.volumeSessions.slice(-10);
-    const avg = Math.round(recent.reduce((a,s)=>a+s.pct,0)/recent.length);
-    vTrend.innerHTML = `
-      <div class="card-body">Average in-range: <b style="color:var(--brass-glow);">${avg}%</b> across your last ${recent.length} projection session${recent.length>1?'s':''}</div>
-      <div style="display:flex;align-items:flex-end;gap:4px;height:60px;margin-top:14px;">
-        ${recent.map(s => `<div style="flex:1;background:var(--brass);opacity:0.7;height:${Math.max(6,s.pct)}%;border-radius:3px 3px 0 0;" title="${s.pct}%"></div>`).join('')}
-      </div>
-    `;
-  }
-  const cal = document.getElementById('calendarGrid');
-  const dates = new Set(state.activityDates);
-  let html = '';
-  for (let i=27;i>=0;i--) {
-    const d = new Date(); d.setDate(d.getDate()-i);
-    const key = d.toISOString().slice(0,10);
-    const active = dates.has(key);
-    html += `<div style="aspect-ratio:1;border-radius:4px;background:${active?'var(--brass)':'var(--panel-2)'};"></div>`;
-  }
-  cal.innerHTML = html;
-  document.getElementById('sessionLog').innerHTML = state.activityDates.length
-    ? `<div class="card"><div class="card-body" style="font-size:13px;">Last active: ${state.activityDates[state.activityDates.length-1]}. Total practice days logged: ${state.activityDates.length}.</div></div>`
-    : `<div class="card"><div class="card-body" style="font-size:13px;color:var(--cream-dim);">Nothing logged yet — complete any exercise to start your streak.</div></div>`;
-}
-
-document.getElementById('resetLink').onclick = () => {
-  if (confirm('Reset all progress? This cannot be undone.')) {
-    state = freshState();
-    saveState();
-    renderProgress();
-  }
-};
-
-// ============ PRINT SHEETS ============
-document.getElementById('printBtn').onclick = () => {
-  const twisterHTML = TONGUE_TWISTERS.map(t => `<li>${t.text}</li>`).join('');
-  const frameworkHTML = FRAMEWORKS.map(f => `<p><b>${f.title}</b> — ${f.body}</p>`).join('');
-  document.getElementById('printSheetArea').innerHTML = `
-    <h2>Podium — Reference Sheets</h2>
-    <h3>Tongue Twisters</h3>
-    <ol>${twisterHTML}</ol>
-    <h3>Frameworks</h3>
-    ${frameworkHTML}
-  `;
-  window.print();
-};
 
 // ============ INIT ============
 renderWarmupFilters();
